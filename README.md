@@ -1,4 +1,5 @@
 # 🐇 MCP SQLite Server
+[![Trust Score](https://archestra.ai/mcp-catalog/api/badge/quality/jparkerweb/mcp-sqlite)](https://archestra.ai/mcp-catalog/jparkerweb__mcp-sqlite)
 This is a Model Context Protocol (MCP) server that provides comprehensive SQLite database interaction capabilities.
 
 ![cursor-settings](https://raw.githubusercontent.com/jparkerweb/mcp-sqlite/refs/heads/main/.readme/mcp-sqlite.jpg)
