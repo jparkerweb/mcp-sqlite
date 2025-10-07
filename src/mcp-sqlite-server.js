@@ -91,7 +91,47 @@ class SQLiteHandler {
     }
 
     async getTableSchema(tableName) {
+        // Validate table name to prevent SQL injection
+        if (!this.isValidTableName(tableName)) {
+            throw new Error(`Invalid table name: ${tableName}`);
+        }
         return this.executeQuery(`PRAGMA table_info(${tableName})`);
+    }
+
+    isValidTableName(tableName) {
+        // Table names should only contain alphanumeric characters, underscores, and be reasonable length
+        return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName) && tableName.length <= 64;
+    }
+
+    async getDatabaseInfo(dbPath) {
+        const dbExists = existsSync(dbPath);
+        let fileSize = 0;
+        let fileStats = null;
+
+        if (dbExists) {
+            fileStats = statSync(dbPath);
+            fileSize = fileStats.size;
+        }
+
+        // Get table count - handle case where database is not accessible
+        let tableCount = 0;
+        try {
+            const tableCountResult = await this.executeQuery(
+                "SELECT count(*) as count FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+            );
+            tableCount = tableCountResult[0].count;
+        } catch {
+            // Database is not accessible, table count remains 0
+            tableCount = 0;
+        }
+
+        return {
+            dbPath,
+            exists: dbExists,
+            size: fileSize,
+            lastModified: dbExists ? fileStats.mtime.toString() : null,
+            tableCount: tableCount,
+        };
     }
 }
 
@@ -113,42 +153,13 @@ async function main() {
         {},
         async () => {
             try {
-                const dbExists = existsSync(absoluteDbPath);
-                let fileSize = 0;
-                let fileStats = null;
-
-                if (dbExists) {
-                    fileStats = statSync(absoluteDbPath);
-                    fileSize = fileStats.size;
-                }
-
-                // Get table count - handle case where database is not accessible
-                let tableCount = 0;
-                try {
-                    const tableCountResult = await handler.executeQuery(
-                        "SELECT count(*) as count FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-                    );
-                    tableCount = tableCountResult[0].count;
-                } catch {
-                    // Database is not accessible, table count remains 0
-                    tableCount = 0;
-                }
+                const dbInfo = await handler.getDatabaseInfo(absoluteDbPath);
 
                 return {
                     content: [
                         {
                             type: 'text',
-                            text: JSON.stringify(
-                                {
-                                    dbPath: absoluteDbPath,
-                                    exists: dbExists,
-                                    size: fileSize,
-                                    lastModified: dbExists ? fileStats.mtime.toString() : null,
-                                    tableCount: tableCount,
-                                },
-                                null,
-                                2
-                            ),
+                            text: JSON.stringify(dbInfo, null, 2),
                         },
                     ],
                 };
@@ -353,6 +364,11 @@ async function main() {
         },
         async ({ table, data }) => {
             try {
+                // Validate table name to prevent SQL injection
+                if (!handler.isValidTableName(table)) {
+                    throw new Error(`Invalid table name: ${table}`);
+                }
+
                 const columns = Object.keys(data);
                 const placeholders = columns.map(() => '?').join(', ');
                 const values = Object.values(data);
@@ -433,6 +449,11 @@ async function main() {
         },
         async ({ table, conditions, limit, offset }) => {
             try {
+                // Validate table name to prevent SQL injection
+                if (!handler.isValidTableName(table)) {
+                    throw new Error(`Invalid table name: ${table}`);
+                }
+
                 let sql = `SELECT * FROM ${table}`;
                 const values = [];
 
@@ -526,6 +547,11 @@ async function main() {
         },
         async ({ table, data, conditions }) => {
             try {
+                // Validate table name to prevent SQL injection
+                if (!handler.isValidTableName(table)) {
+                    throw new Error(`Invalid table name: ${table}`);
+                }
+
                 // Build SET clause
                 const setClause = Object.keys(data)
                     .map(key => `${key} = ?`)
@@ -601,6 +627,11 @@ async function main() {
         },
         async ({ table, conditions }) => {
             try {
+                // Validate table name to prevent SQL injection
+                if (!handler.isValidTableName(table)) {
+                    throw new Error(`Invalid table name: ${table}`);
+                }
+
                 // Build WHERE clause
                 const whereClause = Object.keys(conditions)
                     .map(key => `${key} = ?`)

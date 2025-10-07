@@ -9,6 +9,9 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Constants
+const REQUEST_TIMEOUT_MS = 5000;
+
 class ClientSimulator {
     constructor() {
         this.serverProcess = null;
@@ -68,7 +71,7 @@ class ClientSimulator {
 
             const timeout = setTimeout(() => {
                 reject(new Error('Request timeout'));
-            }, 5000);
+            }, REQUEST_TIMEOUT_MS);
 
             this.serverProcess.stdout.on('data', data => {
                 responseData += data.toString();

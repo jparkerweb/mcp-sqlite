@@ -181,10 +181,9 @@ function createTestDbPath(testName) {
  * Mock console.error to prevent test output pollution
  */
 function mockConsoleError() {
-    const originalError = console.error;
-    console.error = jest.fn();
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     return () => {
-        console.error = originalError;
+        errorSpy.mockRestore();
     };
 }
 
