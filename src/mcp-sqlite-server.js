@@ -7,14 +7,149 @@ const { existsSync, statSync } = require('node:fs');
 const { z } = require('zod');
 const path = require('path');
 
+// List of SQLite reserved keywords (partial, can be extended as needed)
+const SQLITE_RESERVED_KEYWORDS = new Set([
+    'ABORT',
+    'ACTION',
+    'ADD',
+    'AFTER',
+    'ALL',
+    'ALTER',
+    'ANALYZE',
+    'AND',
+    'AS',
+    'ASC',
+    'ATTACH',
+    'AUTOINCREMENT',
+    'BEFORE',
+    'BEGIN',
+    'BETWEEN',
+    'BY',
+    'CASCADE',
+    'CASE',
+    'CAST',
+    'CHECK',
+    'COLLATE',
+    'COLUMN',
+    'COMMIT',
+    'CONFLICT',
+    'CONSTRAINT',
+    'CREATE',
+    'CROSS',
+    'CURRENT_DATE',
+    'CURRENT_TIME',
+    'CURRENT_TIMESTAMP',
+    'DATABASE',
+    'DEFAULT',
+    'DEFERRABLE',
+    'DEFERRED',
+    'DELETE',
+    'DESC',
+    'DETACH',
+    'DISTINCT',
+    'DROP',
+    'EACH',
+    'ELSE',
+    'END',
+    'ESCAPE',
+    'EXCEPT',
+    'EXCLUSIVE',
+    'EXISTS',
+    'EXPLAIN',
+    'FAIL',
+    'FOR',
+    'FOREIGN',
+    'FROM',
+    'FULL',
+    'GLOB',
+    'GROUP',
+    'HAVING',
+    'IF',
+    'IGNORE',
+    'IMMEDIATE',
+    'IN',
+    'INDEX',
+    'INDEXED',
+    'INITIALLY',
+    'INNER',
+    'INSERT',
+    'INSTEAD',
+    'INTERSECT',
+    'INTO',
+    'IS',
+    'ISNULL',
+    'JOIN',
+    'KEY',
+    'LEFT',
+    'LIKE',
+    'LIMIT',
+    'MATCH',
+    'NATURAL',
+    'NO',
+    'NOT',
+    'NOTNULL',
+    'NULL',
+    'OF',
+    'OFFSET',
+    'ON',
+    'OR',
+    'ORDER',
+    'OUTER',
+    'PLAN',
+    'PRAGMA',
+    'PRIMARY',
+    'QUERY',
+    'RAISE',
+    'RECURSIVE',
+    'REFERENCES',
+    'REGEXP',
+    'REINDEX',
+    'RELEASE',
+    'RENAME',
+    'REPLACE',
+    'RESTRICT',
+    'RIGHT',
+    'ROLLBACK',
+    'ROW',
+    'SAVEPOINT',
+    'SELECT',
+    'SET',
+    'TABLE',
+    'TEMP',
+    'TEMPORARY',
+    'THEN',
+    'TO',
+    'TRANSACTION',
+    'TRIGGER',
+    'UNION',
+    'UNIQUE',
+    'UPDATE',
+    'USING',
+    'VACUUM',
+    'VALUES',
+    'VIEW',
+    'VIRTUAL',
+    'WHEN',
+    'WHERE',
+    'WITH',
+    'WITHOUT',
+]);
+
 /**
- * Validates table names to prevent SQL injection
+ * Validates table names to prevent SQL injection and reserved keyword conflicts
  * @param {string} tableName - The table name to validate
  * @returns {boolean} - True if valid, false otherwise
  */
 function isValidTableName(tableName) {
     // Table names should only contain alphanumeric characters, underscores, and be reasonable length
-    return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName) && tableName.length <= 64;
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName) || tableName.length > 64) {
+        return false;
+    }
+    // Check against reserved keywords (case-insensitive)
+    if (SQLITE_RESERVED_KEYWORDS.has(tableName.toUpperCase())) {
+        return false;
+    }
+    return true;
 }
 
 class SQLiteHandler {
@@ -696,4 +831,4 @@ if (require.main === module) {
     main();
 }
 
-module.exports = { SQLiteHandler, isValidTableName };
+module.exports = { SQLiteHandler, isValidTableName, SQLITE_RESERVED_KEYWORDS };

@@ -68,6 +68,23 @@ describe('Error Handling', () => {
             const tables = await handler.listTables();
             expect(tables.map(t => t.name)).toContain('users');
         });
+
+        it('should reject SQLite reserved keywords as table names', async () => {
+            const { isValidTableName } = require('../src/mcp-sqlite-server');
+            
+            // Test some common reserved keywords
+            const reservedKeywords = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'TABLE', 'INDEX', 'CREATE', 'DROP'];
+            
+            for (const keyword of reservedKeywords) {
+                expect(isValidTableName(keyword)).toBe(false);
+                expect(isValidTableName(keyword.toLowerCase())).toBe(false);
+            }
+            
+            // Test that valid table names still work
+            expect(isValidTableName('users')).toBe(true);
+            expect(isValidTableName('user_profiles')).toBe(true);
+            expect(isValidTableName('table123')).toBe(true);
+        });
     });
 
     describe('Database Connection Errors', () => {
