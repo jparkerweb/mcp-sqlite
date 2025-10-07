@@ -1,50 +1,75 @@
 {
-  "name": "mcp-sqlite",
-  "version": "1.0.7",
-  "description": "Model Context Protocol (MCP) server that provides comprehensive SQLite database interaction capabilities",
-  "main": "mcp-sqlite-server.js",
-  "bin": {
-    "mcp-sqlite-server": "./mcp-sqlite-server.js"
-  },
-  "type": "commonjs",
-  "files": [
-    "mcp-sqlite-server.js",
-    "README.md",
-    "CHANGELOG.md",
-    "LICENSE"
-  ],
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jparkerweb/mcp-sqlite.git"
-  },
-  "homepage": "https://github.com/jparkerweb/mcp-sqlite#readme",
-  "bugs": {
-    "url": "https://github.com/jparkerweb/mcp-sqlite/issues",
-    "email": "equilllabs@gmail.com"
-  },
-  "author": "Justin Parker <jparkerweb@gmail.com> (https://www.equilllabs.com)",
-  "license": "ISC",
-  "scripts": {
-    "test": "npx @modelcontextprotocol/inspector mcp-sqlite-server.js",
-    "clean": "npx rimraf node_modules package-lock.json && npm install",
-    "postinstall": "node -e \"console.log('\\nMCP SQLite server installed! Run with: npx mcp-sqlite-server <database-path>')\""
-  },
-  "keywords": [
-    "mcp",
-    "sqlite",
-    "database",
-    "llm",
-    "cursor",
-    "windsurf",
-    "ide",
-    "development",
-    "aitooling"
-  ],
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
-    "sqlite3": "^5.1.7"
-  }
+    "name": "mcp-sqlite",
+    "version": "1.0.7",
+    "description": "Model Context Protocol (MCP) server that provides comprehensive SQLite database interaction capabilities",
+    "main": "src/mcp-sqlite-server.js",
+    "bin": {
+        "mcp-sqlite-server": "./src/mcp-sqlite-server.js"
+    },
+    "type": "commonjs",
+    "files": [
+        "src/",
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE"
+    ],
+    "engines": {
+        "node": ">=14.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jparkerweb/mcp-sqlite.git"
+    },
+    "homepage": "https://github.com/jparkerweb/mcp-sqlite#readme",
+    "bugs": {
+        "url": "https://github.com/jparkerweb/mcp-sqlite/issues",
+        "email": "equilllabs@gmail.com"
+    },
+    "author": "Justin Parker <jparkerweb@gmail.com> (https://www.equilllabs.com)",
+    "license": "ISC",
+    "scripts": {
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "test:mcp": "npx @modelcontextprotocol/inspector src/mcp-sqlite-server.js",
+        "lint": "eslint src/",
+        "lint:fix": "eslint src/ --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "clean": "npx rimraf node_modules package-lock.json && npm install",
+        "postinstall": "node -e \"console.log('\\nMCP SQLite server installed! Run with: npx mcp-sqlite-server <database-path>')\"",
+        "prepare": "husky"
+    },
+    "keywords": [
+        "mcp",
+        "sqlite",
+        "database",
+        "llm",
+        "cursor",
+        "windsurf",
+        "VSCode",
+        "ide",
+        "development",
+        "aitooling"
+    ],
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.12.1",
+        "sqlite3": "^5.1.7"
+    },
+    "devDependencies": {
+        "husky": "^9.1.7",
+        "jest": "^29.7.0",
+        "lint-staged": "^16.2.3",
+        "prettier": "^3.6.2",
+        "rimraf": "^5.0.5"
+    },
+    "lint-staged": {
+        "*.js": [
+            "eslint --fix",
+            "prettier --write"
+        ],
+        "*.{json,md}": [
+            "prettier --write"
+        ]
+    }
 }
