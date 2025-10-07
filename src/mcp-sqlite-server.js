@@ -7,6 +7,16 @@ const { existsSync, statSync } = require('node:fs');
 const { z } = require('zod');
 const path = require('path');
 
+/**
+ * Validates table names to prevent SQL injection
+ * @param {string} tableName - The table name to validate
+ * @returns {boolean} - True if valid, false otherwise
+ */
+function isValidTableName(tableName) {
+    // Table names should only contain alphanumeric characters, underscores, and be reasonable length
+    return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName) && tableName.length <= 64;
+}
+
 class SQLiteHandler {
     constructor(dbPath) {
         this.dbPath = dbPath;
@@ -92,15 +102,10 @@ class SQLiteHandler {
 
     async getTableSchema(tableName) {
         // Validate table name to prevent SQL injection
-        if (!this.isValidTableName(tableName)) {
+        if (!isValidTableName(tableName)) {
             throw new Error(`Invalid table name: ${tableName}`);
         }
         return this.executeQuery(`PRAGMA table_info(${tableName})`);
-    }
-
-    isValidTableName(tableName) {
-        // Table names should only contain alphanumeric characters, underscores, and be reasonable length
-        return /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName) && tableName.length <= 64;
     }
 
     async getDatabaseInfo(dbPath) {
@@ -180,7 +185,7 @@ async function main() {
     // Register SQLite query tool
     server.tool(
         'query',
-        "Execute raw SQL queries against the database with optional parameterized values for security. Supports SELECT, INSERT, UPDATE, DELETE, and DDL operations. Use parameterized queries (with 'values' array) to prevent SQL injection. For better performance: use LIMIT clauses for large result sets, create indexes for frequently queried columns, and avoid SELECT * when possible. Returns query results as JSON array.",
+        "Execute raw SQL queries against the database with optional parameterized values for security. Supports SELECT, INSERT, UPDATE, DELETE, and DDL operations. Use parameterized queries (with 'values' array) to prevent SQL injection. For better performance: use LIMIT clauses for large result sets, create indexes for frequently queried columns, and avoid SELECT * when possible. Returns a structured JSON object with fields: success, data (array of results), rowCount, and timestamp.",
         {
             sql: z
                 .string()
@@ -365,7 +370,7 @@ async function main() {
         async ({ table, data }) => {
             try {
                 // Validate table name to prevent SQL injection
-                if (!handler.isValidTableName(table)) {
+                if (!isValidTableName(table)) {
                     throw new Error(`Invalid table name: ${table}`);
                 }
 
@@ -450,7 +455,7 @@ async function main() {
         async ({ table, conditions, limit, offset }) => {
             try {
                 // Validate table name to prevent SQL injection
-                if (!handler.isValidTableName(table)) {
+                if (!isValidTableName(table)) {
                     throw new Error(`Invalid table name: ${table}`);
                 }
 
@@ -548,7 +553,7 @@ async function main() {
         async ({ table, data, conditions }) => {
             try {
                 // Validate table name to prevent SQL injection
-                if (!handler.isValidTableName(table)) {
+                if (!isValidTableName(table)) {
                     throw new Error(`Invalid table name: ${table}`);
                 }
 
@@ -628,7 +633,7 @@ async function main() {
         async ({ table, conditions }) => {
             try {
                 // Validate table name to prevent SQL injection
-                if (!handler.isValidTableName(table)) {
+                if (!isValidTableName(table)) {
                     throw new Error(`Invalid table name: ${table}`);
                 }
 
@@ -691,4 +696,4 @@ if (require.main === module) {
     main();
 }
 
-module.exports = { SQLiteHandler };
+module.exports = { SQLiteHandler, isValidTableName };
