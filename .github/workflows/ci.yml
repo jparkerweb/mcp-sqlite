@@ -28,7 +28,7 @@ jobs:
               run: npm ci
 
             - name: Run linting
-              run: npx eslint mcp-sqlite-server.js
+              run: npx eslint src/
 
             - name: Run tests
               run: npm test
@@ -84,7 +84,7 @@ jobs:
               run: npm ci
 
             - name: Verify build
-              run: node -c mcp-sqlite-server.js
+              run: node -c src/mcp-sqlite-server.js
 
             - name: Test MCP server startup
-              run: 'timeout 10s node mcp-sqlite-server.js :memory: || true'
+              run: 'timeout 10s node src/mcp-sqlite-server.js :memory: || true'

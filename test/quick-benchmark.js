@@ -127,33 +127,33 @@ clientOperations.forEach(operation => {
         const start = performance.now();
 
         switch (operation) {
-            case 'parse_response':
-                // Old way: parse and calculate metadata
-                const oldParsed = JSON.parse(oldFormat);
-                const oldRowCount = oldParsed.length;
-                const oldHasData = oldParsed.length > 0;
-                break;
+        case 'parse_response':
+            // Old way: parse and calculate metadata
+            const oldParsed = JSON.parse(oldFormat);
+            const oldRowCount = oldParsed.length;
+            const oldHasData = oldParsed.length > 0;
+            break;
 
-            case 'extract_metadata':
-                // New way: direct metadata access
-                const newParsed = JSON.parse(newFormat);
-                const newSuccess = newParsed.success;
-                const newRowCount = newParsed.rowCount;
-                const newTimestamp = newParsed.timestamp;
-                break;
+        case 'extract_metadata':
+            // New way: direct metadata access
+            const newParsed = JSON.parse(newFormat);
+            const newSuccess = newParsed.success;
+            const newRowCount = newParsed.rowCount;
+            const newTimestamp = newParsed.timestamp;
+            break;
 
-            case 'handle_error':
-                // Old way: string parsing
-                const oldIsError = oldErrorFormat.startsWith('Error:');
-                const oldMessage = oldErrorFormat.replace('Error: ', '');
-                break;
+        case 'handle_error':
+            // Old way: string parsing
+            const oldIsError = oldErrorFormat.startsWith('Error:');
+            const oldMessage = oldErrorFormat.replace('Error: ', '');
+            break;
 
-            case 'check_success':
-                // New way: structured error handling
-                const newErrorParsed = JSON.parse(newErrorFormat);
-                const newIsError = !newErrorParsed.success;
-                const newErrorType = newErrorParsed.errorType;
-                break;
+        case 'check_success':
+            // New way: structured error handling
+            const newErrorParsed = JSON.parse(newErrorFormat);
+            const newIsError = !newErrorParsed.success;
+            const newErrorType = newErrorParsed.errorType;
+            break;
         }
 
         const end = performance.now();

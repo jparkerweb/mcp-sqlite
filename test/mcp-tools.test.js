@@ -4,93 +4,7 @@ const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio
 const { existsSync, statSync } = require('node:fs');
 const { z } = require('zod');
 const path = require('path');
-
-// Import the SQLiteHandler class (we'll need to extract it from the main file)
-const sqlite3 = require('sqlite3').verbose();
-
-class SQLiteHandler {
-    constructor(dbPath) {
-        this.dbPath = dbPath;
-        this.isValid = true;
-        this.db = null;
-        this.initError = null;
-        this.initPromise = null;
-
-        // Create database connection and handle initialization asynchronously
-        this.initPromise = new Promise((resolve, reject) => {
-            try {
-                this.db = new sqlite3.Database(dbPath, err => {
-                    if (err) {
-                        this.initError = err;
-                        this.isValid = false;
-                        reject(err);
-                    } else {
-                        this.isValid = true;
-                        resolve();
-                    }
-                });
-            } catch (err) {
-                this.initError = err;
-                this.isValid = false;
-                reject(err);
-            }
-        });
-    }
-
-    // Helper method to check if database is valid
-    async checkDatabase() {
-        try {
-            // Wait for initialization to complete
-            await this.initPromise;
-        } catch (err) {
-            // Initialization failed, this is expected for invalid paths
-            throw new Error(`Database not accessible: ${err.message}`);
-        }
-
-        if (!this.isValid || !this.db) {
-            throw new Error('Database connection not established');
-        }
-    }
-
-    async executeQuery(sql, values = []) {
-        await this.checkDatabase();
-        return new Promise((resolve, reject) => {
-            this.db.all(sql, values, (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-    }
-
-    async executeRun(sql, values = []) {
-        await this.checkDatabase();
-        return new Promise((resolve, reject) => {
-            this.db.run(sql, values, function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        lastID: this.lastID,
-                        changes: this.changes,
-                    });
-                }
-            });
-        });
-    }
-
-    async listTables() {
-        return this.executeQuery(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-        );
-    }
-
-    async getTableSchema(tableName) {
-        return this.executeQuery(`PRAGMA table_info(${tableName})`);
-    }
-}
+const { SQLiteHandler } = require('../src/mcp-sqlite-server');
 
 // Mock MCP Server for testing
 class MockMcpServer {
@@ -492,7 +406,7 @@ function setupMcpTools(server, handler, absoluteDbPath) {
                 let tableCount = 0;
                 try {
                     const tableCountResult = await handler.executeQuery(
-                        "SELECT count(*) as count FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+                        'SELECT count(*) as count FROM sqlite_master WHERE type=\'table\' AND name NOT LIKE \'sqlite_%\''
                     );
                     tableCount = tableCountResult[0].count;
                 } catch (error) {

@@ -1,56 +1,5 @@
 const { TestDatabase, createTestDbPath, mockConsoleError } = require('./test-utils');
-
-// Import the SQLiteHandler class
-const sqlite3 = require('sqlite3').verbose();
-
-class SQLiteHandler {
-    constructor(dbPath) {
-        this.dbPath = dbPath;
-
-        this.db = new sqlite3.Database(dbPath, err => {
-            if (err) {
-                console.error(`Error opening database: ${err.message}`);
-            }
-        });
-    }
-
-    async executeQuery(sql, values = []) {
-        return new Promise((resolve, reject) => {
-            this.db.all(sql, values, (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-    }
-
-    async executeRun(sql, values = []) {
-        return new Promise((resolve, reject) => {
-            this.db.run(sql, values, function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        lastID: this.lastID,
-                        changes: this.changes,
-                    });
-                }
-            });
-        });
-    }
-
-    async listTables() {
-        return this.executeQuery(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-        );
-    }
-
-    async getTableSchema(tableName) {
-        return this.executeQuery(`PRAGMA table_info(${tableName})`);
-    }
-}
+const { SQLiteHandler } = require('../src/mcp-sqlite-server');
 
 describe('Error Handling', () => {
     let testDb;
@@ -92,7 +41,7 @@ describe('Error Handling', () => {
         });
 
         it('should handle SQL injection in parameterized queries', async () => {
-            const maliciousValue = "'; DROP TABLE users; --";
+            const maliciousValue = '\'; DROP TABLE users; --';
 
             // This should be treated as a literal string value, not SQL
             const results = await handler.executeQuery('SELECT * FROM users WHERE name = ?', [

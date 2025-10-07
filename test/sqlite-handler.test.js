@@ -1,58 +1,5 @@
 const { TestDatabase, createTestDbPath, mockConsoleError } = require('./test-utils');
-
-// We need to extract the SQLiteHandler class from the main file
-// Since it's not exported, we'll create a mock version for testing
-const sqlite3 = require('sqlite3').verbose();
-
-class SQLiteHandler {
-    constructor(dbPath) {
-        this.dbPath = dbPath;
-
-        // Open the database without logging
-        this.db = new sqlite3.Database(dbPath, err => {
-            if (err) {
-                console.error(`Error opening database: ${err.message}`);
-            }
-        });
-    }
-
-    async executeQuery(sql, values = []) {
-        return new Promise((resolve, reject) => {
-            this.db.all(sql, values, (err, rows) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(rows);
-                }
-            });
-        });
-    }
-
-    async executeRun(sql, values = []) {
-        return new Promise((resolve, reject) => {
-            this.db.run(sql, values, function (err) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        lastID: this.lastID,
-                        changes: this.changes,
-                    });
-                }
-            });
-        });
-    }
-
-    async listTables() {
-        return this.executeQuery(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
-        );
-    }
-
-    async getTableSchema(tableName) {
-        return this.executeQuery(`PRAGMA table_info(${tableName})`);
-    }
-}
+const { SQLiteHandler } = require('../src/mcp-sqlite-server');
 
 describe('SQLiteHandler', () => {
     let testDb;

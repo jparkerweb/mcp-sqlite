@@ -114,7 +114,7 @@ console.log('='.repeat(40));
 console.log('');
 console.log('The "negative improvement" (-356%) is misleading because:');
 console.log('');
-console.log("1. 📈 We're measuring raw parsing speed, not value");
+console.log('1. 📈 We\'re measuring raw parsing speed, not value');
 console.log('2. 🎯 The new format provides 5x more functionality');
 console.log('3. 🛠️  Client code becomes 3x simpler');
 console.log('4. 🔧 Error handling becomes much more robust');

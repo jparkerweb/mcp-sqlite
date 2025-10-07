@@ -33,6 +33,10 @@ class SQLiteHandler {
                 this.isValid = false;
                 reject(err);
             }
+        }).catch(err => {
+            // Store the error but don't re-throw to keep constructor from throwing
+            this.initError = err;
+            this.isValid = false;
         });
     }
 
@@ -125,7 +129,7 @@ async function main() {
                         "SELECT count(*) as count FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
                     );
                     tableCount = tableCountResult[0].count;
-                } catch (error) {
+                } catch {
                     // Database is not accessible, table count remains 0
                     tableCount = 0;
                 }
@@ -652,4 +656,8 @@ async function main() {
     await server.connect(transport);
 }
 
-main();
+if (require.main === module) {
+    main();
+}
+
+module.exports = { SQLiteHandler };

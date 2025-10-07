@@ -371,7 +371,7 @@ describe('Integration Tests', () => {
 
             // Test operations on empty database
             const tables = await emptyDb.executeQuery(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+                'SELECT name FROM sqlite_master WHERE type=\'table\' AND name NOT LIKE \'sqlite_%\''
             );
             expect(tables).toHaveLength(0);
 
@@ -389,12 +389,12 @@ describe('Integration Tests', () => {
 
             // Create only system tables (this happens automatically)
             const tables = await systemDb.executeQuery(
-                "SELECT name FROM sqlite_master WHERE type='table'"
+                'SELECT name FROM sqlite_master WHERE type=\'table\''
             );
 
             // Should have system tables but no user tables
             const userTables = await systemDb.executeQuery(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+                'SELECT name FROM sqlite_master WHERE type=\'table\' AND name NOT LIKE \'sqlite_%\''
             );
             expect(userTables).toHaveLength(0);
 
