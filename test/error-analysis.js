@@ -229,7 +229,9 @@ workflowTests.forEach(test => {
 
     console.log(`   Old Workflow: ${oldAvg.toFixed(4)}ms`);
     console.log(`   New Workflow: ${newAvg.toFixed(4)}ms`);
-    console.log(`   Improvement: ${(((oldAvg - newAvg) / oldAvg) * 100).toFixed(2)}% faster`);
+    const improvementPercent = ((oldAvg - newAvg) / oldAvg) * 100;
+    const improvementLabel = improvementPercent >= 0 ? 'faster' : 'slower';
+    console.log(`   Improvement: ${Math.abs(improvementPercent).toFixed(2)}% ${improvementLabel}`);
 });
 
 console.log('\n📋 CONCLUSION');
