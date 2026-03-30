@@ -13,6 +13,10 @@ This is a Model Context Protocol (MCP) server that provides comprehensive SQLite
 - Database exploration and introspection
 - Execute custom SQL queries
 
+## Hosted deployment
+
+A hosted deployment is available on [Fronteir AI](https://fronteir.ai/mcp/jparkerweb-mcp-sqlite).
+
 ## Setup
 
 Define the command in your IDE's MCP Server settings:
