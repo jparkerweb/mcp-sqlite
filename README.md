@@ -1,4 +1,5 @@
 # 🐇 MCP SQLite Server
+[![MCP Contract Validated](https://img.shields.io/badge/MCP%20Contract-Validated-0080ff?logo=shield)](https://github.com/gendjo-owlhead/mcp-contract-check)
 This is a Model Context Protocol (MCP) server that provides comprehensive SQLite database interaction capabilities.
 
 ![cursor-settings](https://raw.githubusercontent.com/jparkerweb/mcp-sqlite/refs/heads/main/.readme/mcp-sqlite.jpg)

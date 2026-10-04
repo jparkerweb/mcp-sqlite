@@ -1,0 +1,53 @@
+[
+  {
+    "tool": "db_info",
+    "arguments": {},
+    "expected": "success"
+  },
+  {
+    "tool": "query",
+    "arguments": {
+      "sql": "SELECT 1 AS val"
+    },
+    "expected": "success"
+  },
+  {
+    "tool": "get_table_schema",
+    "arguments": {
+      "tableName": "test_table"
+    },
+    "expected": "fail"
+  },
+  {
+    "tool": "create_record",
+    "arguments": {
+      "table": "test_table",
+      "data": { "id": 1 }
+    },
+    "expected": "fail"
+  },
+  {
+    "tool": "read_records",
+    "arguments": {
+      "table": "test_table"
+    },
+    "expected": "fail"
+  },
+  {
+    "tool": "update_records",
+    "arguments": {
+      "table": "test_table",
+      "data": { "id": 1 },
+      "conditions": { "id": 1 }
+    },
+    "expected": "fail"
+  },
+  {
+    "tool": "delete_records",
+    "arguments": {
+      "table": "test_table",
+      "conditions": { "id": 1 }
+    },
+    "expected": "fail"
+  }
+]

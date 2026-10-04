@@ -1,0 +1,29 @@
+name: MCP Contract Check
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  contract-validation:
+    name: Validate MCP Tool Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run MCP Contract Check
+        uses: gendjo-owlhead/mcp-contract-check@v1
+        with:
+          command: "node mcp-sqlite-server.js /tmp/test.db"
+          cases: "cases"
